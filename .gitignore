@@ -1,0 +1,10 @@
+# intellij idea files
+.idea/
+*.iml
+
+# binaries
+target/
+
+# credentials
+src/main/filters/**
+!src/main/filters/example.properties
