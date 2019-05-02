@@ -54,6 +54,10 @@ public class ProductGroup {
         return imagePath;
     }
 
+    public List<ProductGroup> getChildren() {
+        return children;
+    }
+
     public List<Product> getProducts() {
         return products;
     }
