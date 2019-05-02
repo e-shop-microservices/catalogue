@@ -29,6 +29,10 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductGroup group;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "manufacturer_id", nullable = false)
+    private Manufacturer manufacturer;
+
     @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CustomProperty> customProperties = new ArrayList<>();
 

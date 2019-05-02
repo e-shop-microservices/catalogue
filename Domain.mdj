@@ -220,7 +220,7 @@
 											"top": 729,
 											"width": 252.154296875,
 											"height": 13,
-											"text": "-manufacturer: ProductManufacturer",
+											"text": "-manufacturer: Manufacturer",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2739,7 +2739,7 @@
 											"top": 775,
 											"width": 156.8125,
 											"height": 13,
-											"text": "ProductManufacturer"
+											"text": "Manufacturer"
 										},
 										{
 											"_type": "LabelView",
@@ -2828,7 +2828,7 @@
 											"top": 813,
 											"width": 156.8125,
 											"height": 13,
-											"text": "-imagePath: String",
+											"text": "-logoPath: String",
 											"horizontalAlignment": 0
 										}
 									],
@@ -5274,7 +5274,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "ProductManufacturer",
+					"name": "Manufacturer",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -5322,7 +5322,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFqRdjSpAaHLrY="
 							},
-							"name": "imagePath",
+							"name": "logoPath",
 							"visibility": "private",
 							"type": "String"
 						}
