@@ -34,7 +34,7 @@ public class Product {
     private Manufacturer manufacturer;
 
     @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<ProductParameter> properties = new ArrayList<>();
+    private List<ProductParameter> parameters = new ArrayList<>();
 
     public Product() {
         // required by JPA
@@ -67,7 +67,7 @@ public class Product {
         return imagePath;
     }
 
-    public List<ProductParameter> getProperties() {
-        return properties;
+    public List<ProductParameter> getParameters() {
+        return parameters;
     }
 }

@@ -21,15 +21,15 @@ public class ProductController {
     @GetMapping("")
     public FindProductResponse getProducts(
             @Valid FindProductRequest request,
-            @RequestParam Map<String, String> customProperties) {
-        customProperties.remove("searchQuery");
-        customProperties.remove("groupId");
-        customProperties.remove("pageIndex");
-        customProperties.remove("pageSize");
-        customProperties.remove("minPrice");
-        customProperties.remove("maxPrice");
-        customProperties.remove("manufacturerId");
-        request.setParameters(customProperties);
+            @RequestParam Map<String, String> parameters) {
+        parameters.remove("searchQuery");
+        parameters.remove("groupId");
+        parameters.remove("pageIndex");
+        parameters.remove("pageSize");
+        parameters.remove("minPrice");
+        parameters.remove("maxPrice");
+        parameters.remove("manufacturerId");
+        request.setParameters(parameters);
         return productService.findProducts(request);
     }
 }
