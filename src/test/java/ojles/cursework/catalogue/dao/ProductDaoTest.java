@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.*;
 @DataJpaTest
 @RunWith(SpringRunner.class)
 @Sql("/sql/productCustomSearch.sql")
-public class ProductCustomSearchTest {
+public class ProductDaoTest {
     @Autowired
     private ProductDao productDao;
 
