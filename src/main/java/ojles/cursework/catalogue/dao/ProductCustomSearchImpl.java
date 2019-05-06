@@ -36,7 +36,7 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         }
 
         List<String> predicates = buildPredicates(request);
-        if (predicates.size() == 0) {
+        if (predicates.isEmpty()) {
             return queryBuilder.toString();
         }
 
@@ -74,7 +74,7 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         }
 
         List<String> predicates = buildPredicates(request);
-        if (predicates.size() == 0) {
+        if (predicates.isEmpty()) {
             return queryBuilder.toString();
         }
 
@@ -127,11 +127,10 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
     }
 
     private String buildSearchQueryPredicate(String searchQuery) {
-        return String.format(
-                "(" +
+        return String.format("(" +
                         "lower(p.name) like '%%%1$s%%' " +
                         "or lower(p.description) like '%%%1$s%%'" +
-                ")",
+                        ")",
                 searchQuery.toLowerCase());
     }
 

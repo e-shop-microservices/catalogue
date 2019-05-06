@@ -4,8 +4,6 @@ import javax.persistence.*;
 
 @Entity
 public class ProductParameter {
-    private static final String OPTIONS_SEPARATOR = ":";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -39,11 +37,5 @@ public class ProductParameter {
 
     public String getValue() {
         return value;
-    }
-
-    public enum Type {
-        NUMBER,
-        STRING,
-        OPTIONS
     }
 }

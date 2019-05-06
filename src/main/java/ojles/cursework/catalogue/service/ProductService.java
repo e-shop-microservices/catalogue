@@ -19,11 +19,6 @@ public class ProductService {
     private final ProductDao productDao;
     private final ProductGroupDao productGroupDao;
 
-    /**
-     * Need to return:
-     * - products and their parameters. Don't aggregate all parameters, do that in another service
-     * - page size and index
-     */
     @Transactional
     public FindProductResponse findProducts(FindProductRequest request) {
         FindProductResponse response = new FindProductResponse();
