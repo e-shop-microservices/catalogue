@@ -55,6 +55,12 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
                     .append(request.getParameters().size());
         }
 
+        // build pagination
+        queryBuilder.append(" limit ")
+                .append(request.getPageIndex() * request.getPageSize())
+                .append(",")
+                .append(request.getPageSize());
+
         return queryBuilder.toString();
     }
 

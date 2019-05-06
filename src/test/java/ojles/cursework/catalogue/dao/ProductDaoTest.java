@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -241,5 +242,24 @@ public class ProductDaoTest {
         request.setMinPrice(4000L);
         long count = productDao.countProducts(request);
         assertThat(count, equalTo(1L));
+    }
+
+    @Test
+    public void testPaginationWithSearchQueryFilter() {
+        int pageSize = 1;
+        request.setSearchQuery("salewa");
+        request.setPageSize(pageSize);
+
+        List<Product> products = productDao.findProducts(request);
+        assertThat(products.size(), equalTo(pageSize));
+
+        List<Long> ids = products.stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        assertThat(ids, anyOf(
+                hasItem(2L),
+                hasItem(3L)
+        ));
     }
 }
