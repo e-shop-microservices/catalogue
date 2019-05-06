@@ -23,8 +23,6 @@ public class Product {
     @Column(nullable = false)
     private String imagePath;
 
-    // this property is only to add group_id column to the product table
-    // no getter or setter is present because this property is not intended to be used here
     @JoinColumn(name = "group_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductGroup group;
@@ -40,11 +38,12 @@ public class Product {
         // required by JPA
     }
 
-    public Product(String name, String description, Long price, String imagePath) {
+    public Product(String name, String description, Long price, String imagePath, Manufacturer manufacturer) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.imagePath = imagePath;
+        this.manufacturer = manufacturer;
     }
 
     public long getId() {
@@ -67,7 +66,19 @@ public class Product {
         return imagePath;
     }
 
+    public long getGroupId() {
+        return group.getId();
+    }
+
+    public int getManufacturerId() {
+        return manufacturer.getId();
+    }
+
     public List<ProductParameter> getParameters() {
         return parameters;
+    }
+
+    void setGroup(ProductGroup group) {
+        this.group = group;
     }
 }

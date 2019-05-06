@@ -1,5 +1,6 @@
 package ojles.cursework.catalogue.dto;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import ojles.cursework.catalogue.domain.Product;
@@ -11,14 +12,21 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class FindProductResponse {
+    @Setter(AccessLevel.NONE)
     private List<ProductDto> products;
-    private List<ProductGroup> childGroups;
-    private int totalPages;
-    private int totalAmount;
+    @Setter(AccessLevel.NONE)
+    private List<ProductGroupDto> childGroups;
+    private Long totalAmount;
 
-    public void setProducts(List<Product> entities) {
-        products = entities.stream()
-                .map(entity -> new ProductDto(entity.getName(), entity.getPrice()))
+    public void setProducts(List<Product> products) {
+        this.products = products.stream()
+                .map(ProductDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public void setChildGroups(List<ProductGroup> childGroups) {
+        this.childGroups = childGroups.stream()
+                .map(ProductGroupDto::from)
                 .collect(Collectors.toList());
     }
 }

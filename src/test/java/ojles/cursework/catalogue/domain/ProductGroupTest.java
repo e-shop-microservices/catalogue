@@ -2,6 +2,7 @@ package ojles.cursework.catalogue.domain;
 
 import ojles.cursework.catalogue.exception.ForbiddenActionException;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -25,21 +26,13 @@ public class ProductGroupTest {
     }
 
     @Test
-    public void testParameterizedConstructor2() {
-        ProductGroup parentGroup = new ProductGroup();
-        ProductGroup group = new ProductGroup("random name 2", "random image path 2", parentGroup);
-        assertThat(group.getId(), equalTo(0L));
-        assertThat(group.getName(), equalTo("random name 2"));
-        assertThat(group.getImagePath(), equalTo("random image path 2"));
-        assertThat(getField(group, "parentGroup"), equalTo(parentGroup));
-    }
-
-    @Test
     public void testAddProduct() {
         Product product = new Product();
         ProductGroup group = new ProductGroup();
         group.addProduct(product);
         assertThat(group.getProducts(), hasItem(product));
+        ProductGroup otherGroup = (ProductGroup) ReflectionTestUtils.getField(product, "group");
+        assertThat(otherGroup, equalTo(group));
     }
 
     @Test(expected = ForbiddenActionException.class)

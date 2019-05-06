@@ -33,13 +33,8 @@ public class ProductGroup {
     }
 
     public ProductGroup(String name, String imagePath) {
-        this(name, imagePath, null);
-    }
-
-    public ProductGroup(String name, String imagePath, ProductGroup parentGroup) {
         this.name = name;
         this.imagePath = imagePath;
-        this.parentGroup = parentGroup;
     }
 
     public long getId() {
@@ -68,6 +63,7 @@ public class ProductGroup {
         }
 
         products.add(product);
+        product.setGroup(this);
     }
 
     public void addChildGroup(ProductGroup child) {
@@ -96,5 +92,9 @@ public class ProductGroup {
 
     public boolean isLeaf() {
         return children.isEmpty();
+    }
+
+    public long getParentGroupId() {
+        return parentGroup.getId();
     }
 }
