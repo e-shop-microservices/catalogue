@@ -82,7 +82,7 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
     }
 
     private String buildSearchQueryPredicate(String searchQuery) {
-        return String.format("p.name like '%%%1$s%%' or p.description like '%%%1$s%%'", searchQuery);
+        return String.format("(p.name like '%%%1$s%%' or p.description like '%%%1$s%%')", searchQuery);
     }
 
     private String buildPricePredicate(Long minPrice, Long maxPrice) {

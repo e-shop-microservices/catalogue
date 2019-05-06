@@ -152,4 +152,19 @@ public class ProductCustomSearchTest {
         Product product = products.get(0);
         assertThat(product.getId(), equalTo(3L));
     }
+
+    @Test
+    public void testSearchQueryAndMinPriceAndParametersFilter() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("season", "winter");
+
+        request.setParameters(parameters);
+        request.setSearchQuery("Salewa");
+        request.setMinPrice(4000L);
+
+        List<Product> products = productDao.findProducts(request);
+        assertThat(products.size(), equalTo(1));
+
+        assertThat(products.get(0).getId(), equalTo(3L));
+    }
 }
