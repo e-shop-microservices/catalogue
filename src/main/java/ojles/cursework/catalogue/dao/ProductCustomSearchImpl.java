@@ -21,16 +21,21 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         return query.getResultList();
     }
 
-    private String buildSearchQuery(FindProductRequest findRequest) {
+    public long countProducts(FindProductRequest request) {
+        Query query = em.createNativeQuery(buildCountQuery(request));
+        return ((Number) query.getSingleResult()).longValue();
+    }
+
+    private String buildSearchQuery(FindProductRequest request) {
         StringBuilder queryBuilder = new StringBuilder();
 
         // build select
         queryBuilder.append("select p.* from product as p ");
-        if (!findRequest.getParameters().isEmpty()) {
+        if (!request.getParameters().isEmpty()) {
             queryBuilder.append("inner join product_parameter as pp on p.id = pp.product_id ");
         }
 
-        List<String> predicates = buildPredicates(findRequest);
+        List<String> predicates = buildPredicates(request);
         if (predicates.size() == 0) {
             return queryBuilder.toString();
         }
@@ -45,10 +50,44 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
                     .append(" ");
         }
 
-        if (!findRequest.getParameters().isEmpty()) {
+        if (!request.getParameters().isEmpty()) {
             queryBuilder.append("group by p.id having count(p.id) = ")
-                    .append(findRequest.getParameters().size());
+                    .append(request.getParameters().size());
         }
+
+        return queryBuilder.toString();
+    }
+
+    private String buildCountQuery(FindProductRequest request) {
+        StringBuilder queryBuilder = new StringBuilder();
+
+        // build select
+        queryBuilder.append("select count(*) from (select 1 from product as p ");
+        if (!request.getParameters().isEmpty()) {
+            queryBuilder.append("inner join product_parameter as pp on p.id = pp.product_id ");
+        }
+
+        List<String> predicates = buildPredicates(request);
+        if (predicates.size() == 0) {
+            return queryBuilder.toString();
+        }
+
+        // build where clause
+        queryBuilder.append("where ")
+                .append(predicates.get(0))
+                .append(" ");
+        for (int i = 1; i < predicates.size(); i++) {
+            queryBuilder.append("and ")
+                    .append(predicates.get(i))
+                    .append(" ");
+        }
+
+        if (!request.getParameters().isEmpty()) {
+            queryBuilder.append("group by p.id having count(p.id) = ")
+                    .append(request.getParameters().size());
+        }
+
+        queryBuilder.append(") as p");
 
         return queryBuilder.toString();
     }
@@ -82,7 +121,12 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
     }
 
     private String buildSearchQueryPredicate(String searchQuery) {
-        return String.format("(p.name like '%%%1$s%%' or p.description like '%%%1$s%%')", searchQuery);
+        return String.format(
+                "(" +
+                        "lower(p.name) like '%%%1$s%%' " +
+                        "or lower(p.description) like '%%%1$s%%'" +
+                ")",
+                searchQuery.toLowerCase());
     }
 
     private String buildPricePredicate(Long minPrice, Long maxPrice) {

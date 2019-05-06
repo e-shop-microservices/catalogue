@@ -29,27 +29,23 @@ public class ProductDaoTest {
     private FindProductRequest request = new FindProductRequest();
 
     @Test
-    public void testSearchQueryForName() {
+    public void testFindProductsSearchQueryFilter() {
         request.setSearchQuery("Lasting");
 
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(2));
         assertThat(products.get(0).getName(), containsString("Lasting"));
         assertThat(products.get(1).getName(), containsString("Lasting"));
-    }
 
-    @Test
-    public void testSearchQueryForDescription() {
         request.setSearchQuery("descripti");
-
-        List<Product> products = productDao.findProducts(request);
+        products = productDao.findProducts(request);
 
         // all products
         assertThat(products.size(), equalTo(7));
     }
 
     @Test
-    public void testMinPriceFilter() {
+    public void testFindProductsMinPriceFilter() {
         long minPrice = 1995L;
         request.setMinPrice(minPrice);
 
@@ -62,7 +58,7 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void testMaxPriceFilter() {
+    public void testFindProductsMaxPriceFilter() {
         long maxPrice = 5000L;
         request.setMaxPrice(maxPrice);
 
@@ -75,7 +71,7 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void testMinAndMaxPriceFilter() {
+    public void testFindProductsMinAndMaxPriceFilter() {
         long minPrice = 300L;
         long maxPrice = 3194L;
         request.setMinPrice(minPrice);
@@ -93,7 +89,7 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void testGroupIdFilter() {
+    public void testFindProductsGroupIdFilter() {
         long groupId = 2L;
         request.setGroupId(groupId);
 
@@ -110,7 +106,7 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void testManufacturerIdFilter() {
+    public void testFindProductsManufacturerIdFilter() {
         int manufacturerId = 1;
         request.setManufacturerId(manufacturerId);
 
@@ -127,20 +123,18 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void testSingleProductParameterFilter() {
+    public void testFindProductsSingleParameterFilter() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("season", "summer");
         request.setParameters(parameters);
 
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(1));
-
-        Product product = products.get(0);
-        assertThat(product.getId(), equalTo(4L));
+        assertThat(products.get(0).getId(), equalTo(4L));
     }
 
     @Test
-    public void testMultipleProductParametersFilter() {
+    public void testFindProductMultipleParametersFilter() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("color", "green");
         parameters.put("gender", "male");
@@ -148,13 +142,11 @@ public class ProductDaoTest {
 
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(1));
-
-        Product product = products.get(0);
-        assertThat(product.getId(), equalTo(3L));
+        assertThat(products.get(0).getId(), equalTo(3L));
     }
 
     @Test
-    public void testSearchQueryAndMinPriceAndParametersFilter() {
+    public void testFindProductSearchQueryAndMinPriceAndParametersFilter() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("season", "winter");
 
@@ -164,7 +156,90 @@ public class ProductDaoTest {
 
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(1));
-
         assertThat(products.get(0).getId(), equalTo(3L));
+    }
+
+    @Test
+    public void testCountProductsSearchQueryFilter() {
+        request.setSearchQuery("tI");
+        long count = productDao.countProducts(request);
+        // all products
+        assertThat(count, equalTo(7L));
+
+        request.setSearchQuery("x-socks");
+        count = productDao.countProducts(request);
+        assertThat(count, equalTo(1L));
+    }
+
+    @Test
+    public void testCountProductsMinPriceFilter() {
+        long minPrice = 1995L;
+        request.setMinPrice(minPrice);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(4L));
+    }
+
+    @Test
+    public void testCountProductsMaxPriceFilter() {
+        long maxPrice = 5000L;
+        request.setMaxPrice(maxPrice);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(5L));
+    }
+
+    @Test
+    public void testCountProductsMinAndMaxPriceFilter() {
+        long minPrice = 300L;
+        long maxPrice = 3194L;
+        request.setMinPrice(minPrice);
+        request.setMaxPrice(maxPrice);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(3L));
+    }
+
+    @Test
+    public void testCountProductsGroupIdFilter() {
+        long groupId = 2L;
+        request.setGroupId(groupId);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(4L));
+    }
+
+    @Test
+    public void testCountProductsManufacturerIdFilter() {
+        int manufacturerId = 1;
+        request.setManufacturerId(manufacturerId);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(2L));
+    }
+
+    @Test
+    public void testCountProductsSingleParameterFilter() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("season", "summer");
+        request.setParameters(parameters);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(1L));
+    }
+
+    @Test
+    public void testCountProductMultipleParametersFilter() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("color", "green");
+        parameters.put("gender", "male");
+        request.setParameters(parameters);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(1L));
+    }
+
+    @Test
+    public void testCountProductSearchQueryAndMinPriceAndParametersFilter() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("season", "winter");
+        request.setParameters(parameters);
+        request.setSearchQuery("Salewa");
+        request.setMinPrice(4000L);
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(1L));
     }
 }

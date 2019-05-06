@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ProductCustomSearch {
     List<Product> findProducts(FindProductRequest request);
+
+    long countProducts(FindProductRequest request);
 }
