@@ -4,6 +4,7 @@ import ojles.cursework.catalogue.domain.Manufacturer;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
 import ojles.cursework.catalogue.dto.FindProductRequest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,6 +29,12 @@ public class ProductDaoTest {
     private ProductDao productDao;
 
     private FindProductRequest request = new FindProductRequest();
+    private MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+
+    @Before
+    public void init() {
+        request.setParameters(parameters);
+    }
 
     @Test
     public void testFindProductsSearchQueryFilter() {
@@ -125,10 +132,7 @@ public class ProductDaoTest {
 
     @Test
     public void testFindProductsSingleParameterFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("season", "summer");
-        request.setParameters(parameters);
-
+        parameters.add("season", "summer");
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(1));
         assertThat(products.get(0).getId(), equalTo(4L));
@@ -136,11 +140,8 @@ public class ProductDaoTest {
 
     @Test
     public void testFindProductMultipleParametersFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("color", "green");
-        parameters.put("gender", "male");
-        request.setParameters(parameters);
-
+        parameters.add("color", "green");
+        parameters.add("gender", "male");
         List<Product> products = productDao.findProducts(request);
         assertThat(products.size(), equalTo(1));
         assertThat(products.get(0).getId(), equalTo(3L));
@@ -148,10 +149,7 @@ public class ProductDaoTest {
 
     @Test
     public void testFindProductSearchQueryAndMinPriceAndParametersFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("season", "winter");
-
-        request.setParameters(parameters);
+        parameters.add("season", "winter");
         request.setSearchQuery("Salewa");
         request.setMinPrice(4000L);
 
@@ -216,28 +214,22 @@ public class ProductDaoTest {
 
     @Test
     public void testCountProductsSingleParameterFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("season", "summer");
-        request.setParameters(parameters);
+        parameters.add("season", "summer");
         long count = productDao.countProducts(request);
         assertThat(count, equalTo(1L));
     }
 
     @Test
     public void testCountProductMultipleParametersFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("color", "green");
-        parameters.put("gender", "male");
-        request.setParameters(parameters);
+        parameters.add("color", "green");
+        parameters.add("gender", "male");
         long count = productDao.countProducts(request);
         assertThat(count, equalTo(1L));
     }
 
     @Test
     public void testCountProductSearchQueryAndMinPriceAndParametersFilter() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("season", "winter");
-        request.setParameters(parameters);
+        parameters.add("season", "winter");
         request.setSearchQuery("Salewa");
         request.setMinPrice(4000L);
         long count = productDao.countProducts(request);
@@ -250,16 +242,36 @@ public class ProductDaoTest {
         request.setSearchQuery("salewa");
         request.setPageSize(pageSize);
 
-        List<Product> products = productDao.findProducts(request);
-        assertThat(products.size(), equalTo(pageSize));
-
-        List<Long> ids = products.stream()
+        List<Long> ids = productDao.findProducts(request).stream()
                 .map(Product::getId)
                 .collect(Collectors.toList());
 
-        assertThat(ids, anyOf(
-                hasItem(2L),
-                hasItem(3L)
+        assertThat(ids.size(), equalTo(pageSize));
+        assertThat(ids, (org.hamcrest.Matcher) anyOf(hasItem(2L), hasItem(3L)));
+    }
+
+    @Test
+    public void testCustomParameterWithMultipleValues() {
+        parameters.add("color", "red");
+        parameters.add("color", "gray");
+
+        List<Long> ids = productDao.findProducts(request).stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        assertThat(ids.size(), equalTo(3));
+        assertThat(ids, allOf(
+                hasItem(1L),
+                hasItem(5L),
+                hasItem(6L)
         ));
+    }
+
+    @Test
+    public void testCountProductsWhenCustomParameterWithMultipleValues() {
+        parameters.add("color", "red");
+        parameters.add("color", "blue");
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(3L));
     }
 }

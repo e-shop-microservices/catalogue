@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import ojles.cursework.catalogue.dto.FindProductRequest;
 import ojles.cursework.catalogue.dto.FindProductResponse;
 import ojles.cursework.catalogue.service.ProductService;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class ProductController {
     @GetMapping("")
     public FindProductResponse getProducts(
             @Valid FindProductRequest request,
-            @RequestParam Map<String, String> parameters) {
+            @RequestParam MultiValueMap<String, String> parameters) {
         parameters.remove("searchQuery");
         parameters.remove("groupId");
         parameters.remove("pageIndex");

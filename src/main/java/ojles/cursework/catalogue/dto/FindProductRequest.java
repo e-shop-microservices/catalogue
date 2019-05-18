@@ -3,10 +3,10 @@ package ojles.cursework.catalogue.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.validation.constraints.PositiveOrZero;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -18,7 +18,7 @@ public class FindProductRequest {
     private Long maxPrice;
     private Long groupId;
     private Integer manufacturerId;
-    private Map<String, String> parameters = new HashMap<>();
+    private MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
     @PositiveOrZero
     private int pageIndex = 0;
     @Range(min = 1, max = 200)

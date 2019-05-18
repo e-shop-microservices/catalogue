@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -156,22 +157,15 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         return "p.manufacturer_id = " + manufacturerId;
     }
 
-    private String buildParametersPredicate(Map<String, String> parameters) {
-        StringBuilder predicateBuilder = new StringBuilder("(");
-        boolean isFirst = true;
-        for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-            if (!isFirst) {
-                predicateBuilder.append("or ");
-            }
-            predicateBuilder.append("(pp.name = '")
-                    .append(parameter.getKey())
-                    .append("' and pp.value = '")
-                    .append(parameter.getValue())
-                    .append("')");
-            isFirst = false;
-        }
-        return predicateBuilder
-                .append(")")
-                .toString();
+    private String buildParametersPredicate(Map<String, List<String>> parameters) {
+        String predicate = parameters.entrySet().stream()
+                .map(entry -> {
+                    String parameterValues = entry.getValue().stream()
+                            .map(v -> "'" + v + "'")
+                            .collect(Collectors.joining(","));
+                    return String.format("(pp.name='%s' and pp.value in (%s))", entry.getKey(), parameterValues);
+                })
+                .collect(Collectors.joining(" or "));
+        return String.format("(%s)", predicate);
     }
 }
