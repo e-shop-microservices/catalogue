@@ -7,7 +7,6 @@ import ojles.cursework.catalogue.domain.ProductParameter;
 @Getter
 @Setter
 public class ProductParameterDto {
-    private long id;
     private String name;
     private String value;
 
@@ -17,7 +16,6 @@ public class ProductParameterDto {
         }
 
         ProductParameterDto dto = new ProductParameterDto();
-        dto.id = parameter.getId();
         dto.name = parameter.getName();
         dto.value = parameter.getValue();
         return dto;
