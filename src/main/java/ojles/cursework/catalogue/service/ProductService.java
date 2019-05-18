@@ -21,21 +21,18 @@ public class ProductService {
 
     @Transactional
     public FindProductResponse findProducts(FindProductRequest request) {
-        FindProductResponse response = new FindProductResponse();
         if (request.getGroupId() != null) {
             ProductGroup group = productGroupDao.findById(request.getGroupId()).orElse(null);
             if (group == null) {
                 throw new ResourceNotFoundException("Couldn't find group with id=" + request.getGroupId());
             }
             if (!group.isLeaf()) {
-                response.setChildGroups(group.getChildren());
-                return response;
+                return FindProductResponse.childGroups(group.getChildren());
             }
         }
+
         List<Product> products = productDao.findProducts(request);
         long count = productDao.countProducts(request);
-        response.setProducts(products);
-        response.setTotalAmount(count);
-        return response;
+        return FindProductResponse.products(products, count);
     }
 }

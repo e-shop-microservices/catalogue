@@ -1,7 +1,6 @@
 package ojles.cursework.catalogue.controller;
 
 import ojles.cursework.catalogue.dto.FindProductRequest;
-import ojles.cursework.catalogue.dto.FindProductResponse;
 import ojles.cursework.catalogue.service.ProductService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +43,7 @@ public class ProductControllerRequestBindingIntegrationTest {
                     assertThat(request.getMaxPrice(), equalTo(2345L));
                     assertThat(request.getManufacturerId(), equalTo(384));
                     assertThat(request.getParameters().size(), equalTo(0));
-                    return new FindProductResponse();
+                    return null;
                 });
 
         mockMvc.perform(
@@ -70,7 +69,7 @@ public class ProductControllerRequestBindingIntegrationTest {
                     assertThat(parameters.get("customParameter1").get(0), equalTo("value1"));
                     assertThat(parameters.get("customParameter2").get(0), equalTo("value2"));
                     assertThat(parameters.get("customParameter2").get(1), equalTo("value3"));
-                    return new FindProductResponse();
+                    return null;
                 });
 
         mockMvc.perform(
