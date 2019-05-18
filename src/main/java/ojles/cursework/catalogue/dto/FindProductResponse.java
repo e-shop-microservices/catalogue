@@ -1,6 +1,7 @@
 package ojles.cursework.catalogue.dto;
 
 import lombok.Getter;
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
 
@@ -12,6 +13,7 @@ public final class FindProductResponse {
     private List<ProductDto> products;
     private List<ProductGroupDto> childGroups;
     private Long totalAmount;
+    private List<ProductParameterAvailableValuesDto> availableParameters;
 
     private FindProductResponse() {
     }
@@ -24,12 +26,16 @@ public final class FindProductResponse {
         return response;
     }
 
-    public static FindProductResponse products(List<Product> products, long totalAmount) {
+    public static FindProductResponse products(List<Product> products, long totalAmount,
+                                               List<ParameterAvailableValues> allParameters) {
         FindProductResponse response = new FindProductResponse();
         response.products = products.stream()
                 .map(ProductDto::from)
                 .collect(Collectors.toList());
         response.totalAmount = totalAmount;
+        response.availableParameters = allParameters.stream()
+                .map(p -> new ProductParameterAvailableValuesDto(p.getName(), p.valuesToList()))
+                .collect(Collectors.toList());
         return response;
     }
 }

@@ -1,6 +1,7 @@
 package ojles.cursework.catalogue.dao;
 
 import lombok.RequiredArgsConstructor;
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.dto.FindProductRequest;
 import org.springframework.stereotype.Repository;
@@ -17,14 +18,30 @@ import java.util.stream.Collectors;
 public class ProductCustomSearchImpl implements ProductCustomSearch {
     private final EntityManager em;
 
+    @Override
     public List<Product> findProducts(FindProductRequest request) {
         Query query = em.createNativeQuery(buildSearchQuery(request), Product.class);
         return query.getResultList();
     }
 
+    @Override
     public long countProducts(FindProductRequest request) {
         Query query = em.createNativeQuery(buildCountQuery(request));
         return ((Number) query.getSingleResult()).longValue();
+    }
+
+    @Override
+    public List<ParameterAvailableValues> findAllParameters(FindProductRequest request) {
+        Query query = em.createNativeQuery(buildParameterSearchQuery(request));
+        List<ParameterAvailableValues> parameters = new ArrayList<>();
+        for (Object result : query.getResultList()) {
+            Object[] object = (Object[]) result;
+            ParameterAvailableValues parameter = new ParameterAvailableValues();
+            parameter.setName((String) object[0]);
+            parameter.setValues((String) object[1]);
+            parameters.add(parameter);
+        }
+        return parameters;
     }
 
     private String buildSearchQuery(FindProductRequest request) {
@@ -99,7 +116,35 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         return queryBuilder.toString();
     }
 
-    private List<String> buildPredicates(FindProductRequest findRequest) {
+    private String buildParameterSearchQuery(FindProductRequest request) {
+        StringBuilder queryBuilder = new StringBuilder();
+
+        // build select
+        queryBuilder.append("select pp.name, group_concat(distinct(pp.value) separator ',') ");
+        queryBuilder.append("from product as p inner join product_parameter as pp on p.id = pp.product_id ");
+
+        List<String> predicates = buildPredicatesWithoutParameters(request);
+        if (predicates.isEmpty()) {
+            return queryBuilder.toString();
+        }
+
+        // build where clause
+        queryBuilder.append("where ")
+                .append(predicates.get(0))
+                .append(" ");
+        for (int i = 1; i < predicates.size(); i++) {
+            queryBuilder.append("and ")
+                    .append(predicates.get(i))
+                    .append(" ");
+        }
+
+        // add grouping
+        queryBuilder.append("group by pp.name");
+
+        return queryBuilder.toString();
+    }
+
+    private List<String> buildPredicatesWithoutParameters(FindProductRequest findRequest) {
         List<String> predicates = new ArrayList<>();
         if (findRequest.getSearchQuery() != null) {
             predicates.add(buildSearchQueryPredicate(findRequest.getSearchQuery()));
@@ -119,6 +164,12 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         if (findRequest.getManufacturerId() != null) {
             predicates.add(buildManufacturerId(findRequest.getManufacturerId()));
         }
+
+        return predicates;
+    }
+
+    private List<String> buildPredicates(FindProductRequest findRequest) {
+        List<String> predicates = buildPredicatesWithoutParameters(findRequest);
 
         if (!findRequest.getParameters().isEmpty()) {
             predicates.add(buildParametersPredicate(findRequest.getParameters()));

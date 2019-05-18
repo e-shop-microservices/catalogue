@@ -15,7 +15,7 @@ public class ProductControllerTest {
     private ProductService productService = mock(ProductService.class);
 
     @Test
-    public void testPropertiesThatAreInFindProductRequestShouldBeRemovedFromMap() {
+    public void testParametersThatAreInFindProductRequestShouldBeRemovedFromMap() {
         ProductController productController = new ProductController(productService);
 
         MultiValueMap<String, String> customParameters = new LinkedMultiValueMap<>();
@@ -26,8 +26,8 @@ public class ProductControllerTest {
         customParameters.add("minPrice", "3");
         customParameters.add("maxPrice", "50");
         customParameters.add("manufacturerId", "50");
-        customParameters.add("customProperty1", "qwe");
-        customParameters.add("customProperty2", "rty");
+        customParameters.add("customParameter1", "qwe");
+        customParameters.add("customParameter2", "rty");
         FindProductRequest request = new FindProductRequest();
         productController.getProducts(request, customParameters);
 
@@ -39,7 +39,7 @@ public class ProductControllerTest {
         assertThat(customParameters, not(hasKey("minPrice")));
         assertThat(customParameters, not(hasKey("maxPrice")));
         assertThat(customParameters, not(hasKey("manufacturerId")));
-        assertThat(customParameters, hasKey("customProperty1"));
-        assertThat(customParameters, hasKey("customProperty2"));
+        assertThat(customParameters, hasKey("customParameter1"));
+        assertThat(customParameters, hasKey("customParameter2"));
     }
 }

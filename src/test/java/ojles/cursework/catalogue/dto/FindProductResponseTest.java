@@ -1,5 +1,6 @@
 package ojles.cursework.catalogue.dto;
 
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Manufacturer;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
@@ -34,9 +35,30 @@ public class FindProductResponseTest {
         List<Product> entities = new ArrayList<>();
         entities.add(product);
 
-        FindProductResponse response = FindProductResponse.products(entities, 23L);
+        ParameterAvailableValues parameter1 = new ParameterAvailableValues();
+        parameter1.setName("name1");
+        parameter1.setValues("value11,value12");
+        ParameterAvailableValues parameter2 = new ParameterAvailableValues();
+        parameter2.setName("name2");
+        parameter2.setValues("value21,value22,value23");
+        List<ParameterAvailableValues> parameters = new ArrayList<>();
+        parameters.add(parameter1);
+        parameters.add(parameter2);
+
+        FindProductResponse response = FindProductResponse.products(entities, 23L, parameters);
+        List<ProductParameterAvailableValuesDto> availableParameters = response.getAvailableParameters();
         assertThat(response.getProducts(), is(not(nullValue())));
         assertThat(response.getChildGroups(), is(nullValue()));
         assertThat(response.getTotalAmount(), is(equalTo(23L)));
+        assertThat(availableParameters.size(), equalTo(2));
+        for (ProductParameterAvailableValuesDto parameterValues : availableParameters) {
+            if (parameterValues.getName().equals("name1")) {
+                assertThat(parameterValues.getValues(), hasItems("value11", "value12"));
+            } else if (parameterValues.getName().equals("name2")) {
+                assertThat(parameterValues.getValues(), hasItems("value21", "value22", "value23"));
+            } else {
+                throw new RuntimeException("Invalid parameter name=" + parameterValues.getName());
+            }
+        }
     }
 }

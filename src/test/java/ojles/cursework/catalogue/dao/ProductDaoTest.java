@@ -1,5 +1,6 @@
 package ojles.cursework.catalogue.dao;
 
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Manufacturer;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
@@ -273,5 +274,35 @@ public class ProductDaoTest {
         parameters.add("color", "blue");
         long count = productDao.countProducts(request);
         assertThat(count, equalTo(3L));
+    }
+
+    @Test
+    public void testFindAllParameters() {
+        parameters.add("color", "red");
+        request.setSearchQuery("Lasting");
+        List<ParameterAvailableValues> parameters = productDao.findAllParameters(request);
+
+        // there are 6 parameters in total
+        // four of them have unique value
+        // but in current data-set we have two 'height' parameters with same value 'high'
+        assertThat(parameters.size(), equalTo(3));
+        for (ParameterAvailableValues parameter : parameters) {
+            switch (parameter.getName()) {
+                case "height":
+                    assertThat(parameter.valuesToList().size(), equalTo(1));
+                    assertThat(parameter.valuesToList(), hasItems("high"));
+                    break;
+                case "color":
+                    assertThat(parameter.valuesToList().size(), equalTo(2));
+                    assertThat(parameter.valuesToList(), hasItems("gray", "red"));
+                    break;
+                case "usecase":
+                    assertThat(parameter.valuesToList().size(), equalTo(2));
+                    assertThat(parameter.valuesToList(), hasItems("running", "skiing"));
+                    break;
+                default:
+                    throw new RuntimeException("Invalid parameter.name=" + parameter.getName());
+            }
+        }
     }
 }

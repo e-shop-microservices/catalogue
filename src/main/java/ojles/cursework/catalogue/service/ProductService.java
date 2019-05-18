@@ -3,6 +3,7 @@ package ojles.cursework.catalogue.service;
 import lombok.RequiredArgsConstructor;
 import ojles.cursework.catalogue.dao.ProductDao;
 import ojles.cursework.catalogue.dao.ProductGroupDao;
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
 import ojles.cursework.catalogue.dto.FindProductRequest;
@@ -33,6 +34,7 @@ public class ProductService {
 
         List<Product> products = productDao.findProducts(request);
         long count = productDao.countProducts(request);
-        return FindProductResponse.products(products, count);
+        List<ParameterAvailableValues> parameters = productDao.findAllParameters(request);
+        return FindProductResponse.products(products, count, parameters);
     }
 }

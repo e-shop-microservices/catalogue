@@ -2,6 +2,7 @@ package ojles.cursework.catalogue.service;
 
 import ojles.cursework.catalogue.dao.ProductDao;
 import ojles.cursework.catalogue.dao.ProductGroupDao;
+import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Manufacturer;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
@@ -12,7 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,6 +40,11 @@ public class ProductServiceTest {
 
     @Before
     public void configureDao() {
+        parentGroup.addChildGroup(leaf);
+        leaf.addProduct(product1);
+        leaf.addProduct(product2);
+        leaf.addProduct(product3);
+
         when(productGroupDao.findById(1L)).thenReturn(Optional.of(parentGroup));
         when(productGroupDao.findById(2L)).thenReturn(Optional.empty());
         when(productGroupDao.findById(3L)).thenReturn(Optional.of(leaf));
@@ -56,12 +64,27 @@ public class ProductServiceTest {
                 throw new RuntimeException("Unrecognized groupId=" + request.getGroupId());
             }
         });
-
-        parentGroup.addChildGroup(leaf);
-
-        leaf.addProduct(product1);
-        leaf.addProduct(product2);
-        leaf.addProduct(product3);
+        when(productDao.findAllParameters(Mockito.any(FindProductRequest.class))).thenAnswer(invocation -> {
+            FindProductRequest request = (FindProductRequest) invocation.getArguments()[0];
+            if (request.getGroupId() == 3L) {
+                ParameterAvailableValues parameter1 = new ParameterAvailableValues();
+                parameter1.setName("name1");
+                parameter1.setValues("value11,value12");
+                ParameterAvailableValues parameter2 = new ParameterAvailableValues();
+                parameter2.setName("name2");
+                parameter2.setValues("value21,value22,value23");
+                ParameterAvailableValues parameter3 = new ParameterAvailableValues();
+                parameter3.setName("name3");
+                parameter3.setValues("value31");
+                List<ParameterAvailableValues> parameters = new ArrayList<>();
+                parameters.add(parameter1);
+                parameters.add(parameter2);
+                parameters.add(parameter3);
+                return parameters;
+            } else {
+                throw new RuntimeException("Unrecognized groupId=" + request.getGroupId());
+            }
+        });
     }
 
     @Test
@@ -85,5 +108,6 @@ public class ProductServiceTest {
         FindProductResponse response = productService.findProducts(request);
         assertThat(response.getProducts().size(), equalTo(3));
         assertThat(response.getTotalAmount(), equalTo(120L));
+        assertThat(response.getAvailableParameters().size(), equalTo(3));
     }
 }
