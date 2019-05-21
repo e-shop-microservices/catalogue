@@ -18,6 +18,14 @@ public final class FindProductResponse {
     private FindProductResponse() {
     }
 
+    public static FindProductResponse productsByIds(List<Product> products) {
+        FindProductResponse response = new FindProductResponse();
+        response.products = products.stream()
+                .map(ProductDto::from)
+                .collect(Collectors.toList());
+        return response;
+    }
+
     public static FindProductResponse childGroups(List<ProductGroup> childGroups) {
         FindProductResponse response = new FindProductResponse();
         response.childGroups = childGroups.stream()

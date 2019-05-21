@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class ProductController {
 
     @GetMapping("")
     public FindProductResponse getProducts(
+            @RequestParam(name = "id", required = false) List<Long> productIds,
             @Valid FindProductRequest request,
             @RequestParam MultiValueMap<String, String> parameters) {
         parameters.remove("searchQuery");
@@ -30,6 +32,7 @@ public class ProductController {
         parameters.remove("maxPrice");
         parameters.remove("manufacturerId");
         request.setParameters(parameters);
+        request.setProductIds(productIds);
         return productService.findProducts(request);
     }
 }

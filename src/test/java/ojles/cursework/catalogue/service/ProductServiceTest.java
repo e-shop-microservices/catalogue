@@ -8,15 +8,18 @@ import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
 import ojles.cursework.catalogue.dto.FindProductRequest;
 import ojles.cursework.catalogue.dto.FindProductResponse;
+import ojles.cursework.catalogue.dto.ProductDto;
 import ojles.cursework.catalogue.exception.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -38,8 +41,13 @@ public class ProductServiceTest {
     private Product product2 = new Product("name2", "descr2", 234L, "imgPath2", new Manufacturer());
     private Product product3 = new Product("name3", "descr3", 345L, "imgPath3", new Manufacturer());
 
+    private List<Long> productIds = new ArrayList<>();
+
     @Before
     public void configureDao() {
+        productIds.add(2L);
+        productIds.add(8L);
+
         parentGroup.addChildGroup(leaf);
         leaf.addProduct(product1);
         leaf.addProduct(product2);
@@ -48,6 +56,14 @@ public class ProductServiceTest {
         when(productGroupDao.findById(1L)).thenReturn(Optional.of(parentGroup));
         when(productGroupDao.findById(2L)).thenReturn(Optional.empty());
         when(productGroupDao.findById(3L)).thenReturn(Optional.of(leaf));
+
+        when(productDao.findByIdIn(productIds)).thenAnswer(invocation -> {
+            List<Long> ids = (List<Long>) invocation.getArguments()[0];
+            ReflectionTestUtils.setField(product1, "id", ids.get(0));
+            ReflectionTestUtils.setField(product2, "id", ids.get(1));
+            return Arrays.asList(product1, product2);
+        });
+
         when(productDao.findProducts(Mockito.any(FindProductRequest.class))).thenAnswer(invocation -> {
             FindProductRequest request = (FindProductRequest) invocation.getArguments()[0];
             if (request.getGroupId() == 3L) {
@@ -56,6 +72,7 @@ public class ProductServiceTest {
                 throw new RuntimeException("Unrecognized groupId=" + request.getGroupId());
             }
         });
+
         when(productDao.countProducts(Mockito.any(FindProductRequest.class))).thenAnswer(invocation -> {
             FindProductRequest request = (FindProductRequest) invocation.getArguments()[0];
             if (request.getGroupId() == 3L) {
@@ -64,6 +81,7 @@ public class ProductServiceTest {
                 throw new RuntimeException("Unrecognized groupId=" + request.getGroupId());
             }
         });
+
         when(productDao.findAllParameters(Mockito.any(FindProductRequest.class))).thenAnswer(invocation -> {
             FindProductRequest request = (FindProductRequest) invocation.getArguments()[0];
             if (request.getGroupId() == 3L) {
@@ -85,6 +103,17 @@ public class ProductServiceTest {
                 throw new RuntimeException("Unrecognized groupId=" + request.getGroupId());
             }
         });
+    }
+
+    @Test
+    public void testFindProductShouldReturnProductsByIds() {
+        request.setProductIds(productIds);
+        FindProductResponse response = productService.findProducts(request);
+        assertThat(response.getProducts().size(), equalTo(2));
+        List<Long> ids = response.getProducts().stream()
+                .map(ProductDto::getId)
+                .collect(Collectors.toList());
+        assertThat(ids, hasItems(2L, 8L));
     }
 
     @Test

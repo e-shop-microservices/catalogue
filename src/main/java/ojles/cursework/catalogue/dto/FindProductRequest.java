@@ -7,10 +7,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 @Getter
 @Setter
 public class FindProductRequest {
+    private List<Long> productIds;
     private String searchQuery;
     @PositiveOrZero
     private Long minPrice;

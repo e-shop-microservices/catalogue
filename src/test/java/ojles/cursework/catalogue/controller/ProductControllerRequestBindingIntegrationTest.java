@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.MultiValueMap;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,10 +33,27 @@ public class ProductControllerRequestBindingIntegrationTest {
     private ProductController productController;
 
     @Test
-    public void testFindProductRequestShouldBindCorrectly() throws Exception {
-        when(productController.getProducts(any(FindProductRequest.class), any(MultiValueMap.class)))
+    public void testProductIdsShouldMapCorrectly() throws Exception {
+        when(productController.getProducts(any(List.class), any(FindProductRequest.class), any(MultiValueMap.class)))
                 .thenAnswer(invocation -> {
-                    FindProductRequest request = (FindProductRequest) invocation.getArguments()[0];
+                    List<Long> productIds = (List<Long>) invocation.getArguments()[0];
+                    assertThat(productIds.get(0), equalTo(32L));
+                    assertThat(productIds.get(1), equalTo(88L));
+                    return null;
+                });
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/products")
+                        .param("id", "32")
+                        .param("id", "88")
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testFindProductRequestShouldBindCorrectly() throws Exception {
+        when(productController.getProducts(any(List.class), any(FindProductRequest.class), any(MultiValueMap.class)))
+                .thenAnswer(invocation -> {
+                    FindProductRequest request = (FindProductRequest) invocation.getArguments()[1];
                     assertThat(request.getSearchQuery(), equalTo("shoes"));
                     assertThat(request.getGroupId(), equalTo(913L));
                     assertThat(request.getPageIndex(), equalTo(2));
@@ -60,9 +79,9 @@ public class ProductControllerRequestBindingIntegrationTest {
 
     @Test
     public void testParametersMapShouldMapCorrectly() throws Exception {
-        when(productController.getProducts(any(FindProductRequest.class), any(MultiValueMap.class)))
+        when(productController.getProducts(any(List.class), any(FindProductRequest.class), any(MultiValueMap.class)))
                 .thenAnswer(invocation -> {
-                    MultiValueMap<String, String> parameters = (MultiValueMap<String, String>) invocation.getArguments()[1];
+                    MultiValueMap<String, String> parameters = (MultiValueMap<String, String>) invocation.getArguments()[2];
                     assertThat(parameters.size(), is(equalTo(2)));
                     assertThat(parameters.get("customParameter1").size(), equalTo(1));
                     assertThat(parameters.get("customParameter2").size(), equalTo(2));

@@ -22,6 +22,11 @@ public class ProductService {
 
     @Transactional
     public FindProductResponse findProducts(FindProductRequest request) {
+        if (request.getProductIds() != null) {
+            List<Product> products = productDao.findByIdIn(request.getProductIds());
+            return FindProductResponse.productsByIds(products);
+        }
+
         if (request.getGroupId() != null) {
             ProductGroup group = productGroupDao.findById(request.getGroupId()).orElse(null);
             if (group == null) {

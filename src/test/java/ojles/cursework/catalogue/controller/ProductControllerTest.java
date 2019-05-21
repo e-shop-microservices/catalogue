@@ -6,6 +6,9 @@ import org.junit.Test;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -29,9 +32,13 @@ public class ProductControllerTest {
         customParameters.add("customParameter1", "qwe");
         customParameters.add("customParameter2", "rty");
         FindProductRequest request = new FindProductRequest();
-        productController.getProducts(request, customParameters);
+        List<Long> productIds = new ArrayList<>();
+        productIds.add(32L);
+        productController.getProducts(productIds, request, customParameters);
 
+        assertThat(request.getProductIds(), equalTo(productIds));
         assertThat(request.getParameters(), equalTo(customParameters));
+        assertThat(customParameters, not(hasKey("id")));
         assertThat(customParameters, not(hasKey("searchQuery")));
         assertThat(customParameters, not(hasKey("groupId")));
         assertThat(customParameters, not(hasKey("pageIndex")));

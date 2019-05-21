@@ -20,15 +20,6 @@ public class ProductControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    public void justTest() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/products")
-                        .param("pageIndex", "1")
-                        .param("pageIndex", "2")
-        ).andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
     public void testShouldFailWhenPageIndexIsNegative() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/products")
