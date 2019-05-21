@@ -42,4 +42,13 @@ public class ProductService {
         List<ParameterAvailableValues> parameters = productDao.findAllParameters(request);
         return FindProductResponse.products(products, count, parameters);
     }
+
+    @Transactional
+    public Product findById(long productId) {
+        Product product = productDao.findById(productId).orElse(null);
+        if (product == null) {
+            throw new ResourceNotFoundException("Couldn't find product with id=" + productId);
+        }
+        return product;
+    }
 }

@@ -1,14 +1,13 @@
 package ojles.cursework.catalogue.controller;
 
 import lombok.RequiredArgsConstructor;
+import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.dto.FindProductRequest;
 import ojles.cursework.catalogue.dto.FindProductResponse;
+import ojles.cursework.catalogue.dto.ProductDto;
 import ojles.cursework.catalogue.service.ProductService;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,5 +33,11 @@ public class ProductController {
         request.setParameters(parameters);
         request.setProductIds(productIds);
         return productService.findProducts(request);
+    }
+
+    @GetMapping("/{productId}")
+    public ProductDto getById(@PathVariable("productId") long productId) {
+        Product product = productService.findById(productId);
+        return ProductDto.from(product);
     }
 }
