@@ -54,18 +54,16 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         }
 
         List<String> predicates = buildPredicates(request);
-        if (predicates.isEmpty()) {
-            return queryBuilder.toString();
-        }
-
-        // build where clause
-        queryBuilder.append("where ")
-                .append(predicates.get(0))
-                .append(" ");
-        for (int i = 1; i < predicates.size(); i++) {
-            queryBuilder.append("and ")
-                    .append(predicates.get(i))
+        if (!predicates.isEmpty()) {
+            // build where clause
+            queryBuilder.append("where ")
+                    .append(predicates.get(0))
                     .append(" ");
+            for (int i = 1; i < predicates.size(); i++) {
+                queryBuilder.append("and ")
+                        .append(predicates.get(i))
+                        .append(" ");
+            }
         }
 
         if (!request.getParameters().isEmpty()) {
@@ -92,20 +90,16 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         }
 
         List<String> predicates = buildPredicates(request);
-        if (predicates.isEmpty()) {
-            return queryBuilder
-                    .append(") as p")
-                    .toString();
-        }
-
-        // build where clause
-        queryBuilder.append("where ")
-                .append(predicates.get(0))
-                .append(" ");
-        for (int i = 1; i < predicates.size(); i++) {
-            queryBuilder.append("and ")
-                    .append(predicates.get(i))
+        if (!predicates.isEmpty()) {
+            // build where clause
+            queryBuilder.append("where ")
+                    .append(predicates.get(0))
                     .append(" ");
+            for (int i = 1; i < predicates.size(); i++) {
+                queryBuilder.append("and ")
+                        .append(predicates.get(i))
+                        .append(" ");
+            }
         }
 
         if (!request.getParameters().isEmpty()) {
@@ -113,9 +107,9 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
                     .append(request.getParameters().size());
         }
 
-        queryBuilder.append(") as p");
-
-        return queryBuilder.toString();
+        return queryBuilder
+                .append(") as p")
+                .toString();
     }
 
     private String buildParameterSearchQuery(FindProductRequest request) {
@@ -126,18 +120,16 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
         queryBuilder.append("from product as p inner join product_parameter as pp on p.id = pp.product_id ");
 
         List<String> predicates = buildPredicatesWithoutParameters(request);
-        if (predicates.isEmpty()) {
-            return queryBuilder.toString();
-        }
-
-        // build where clause
-        queryBuilder.append("where ")
-                .append(predicates.get(0))
-                .append(" ");
-        for (int i = 1; i < predicates.size(); i++) {
-            queryBuilder.append("and ")
-                    .append(predicates.get(i))
+        if (!predicates.isEmpty()) {
+            // build where clause
+            queryBuilder.append("where ")
+                    .append(predicates.get(0))
                     .append(" ");
+            for (int i = 1; i < predicates.size(); i++) {
+                queryBuilder.append("and ")
+                        .append(predicates.get(i))
+                        .append(" ");
+            }
         }
 
         // add grouping
