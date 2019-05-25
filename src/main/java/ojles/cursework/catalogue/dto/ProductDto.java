@@ -20,7 +20,7 @@ public class ProductDto {
     private int manufacturerId;
     private List<ProductParameterDto> parameters = new ArrayList<>();
 
-    public static ProductDto from(Product product) {
+    public static ProductDto withoutParameters(Product product) {
         if (product == null) {
             return null;
         }
@@ -33,6 +33,14 @@ public class ProductDto {
         dto.imagePath = product.getImagePath();
         dto.groupId = product.getGroupId();
         dto.manufacturerId = product.getManufacturerId();
+        return dto;
+    }
+
+    public static ProductDto withParameters(Product product) {
+        ProductDto dto = withoutParameters(product);
+        if (dto == null) {
+            return null;
+        }
         dto.parameters = product.getParameters().stream()
                 .map(ProductParameterDto::from)
                 .collect(Collectors.toList());

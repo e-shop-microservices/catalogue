@@ -38,6 +38,6 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ProductDto getById(@PathVariable("productId") long productId) {
         Product product = productService.findById(productId);
-        return ProductDto.from(product);
+        return ProductDto.withParameters(product);
     }
 }

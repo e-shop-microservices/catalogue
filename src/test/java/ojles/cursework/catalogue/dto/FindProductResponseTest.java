@@ -4,6 +4,7 @@ import ojles.cursework.catalogue.dao.model.ParameterAvailableValues;
 import ojles.cursework.catalogue.domain.Manufacturer;
 import ojles.cursework.catalogue.domain.Product;
 import ojles.cursework.catalogue.domain.ProductGroup;
+import ojles.cursework.catalogue.domain.ProductParameter;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class FindProductResponseTest {
     @Test
     public void testFactoryMethodProducts() {
         Product product = new Product("name", "descr", 123L, "img", new Manufacturer());
+        product.getParameters().add(new ProductParameter("name", "value"));
         ProductGroup group = new ProductGroup();
         group.addProduct(product);
         List<Product> entities = new ArrayList<>();
@@ -48,16 +50,26 @@ public class FindProductResponseTest {
         FindProductResponse response = FindProductResponse.products(entities, 23L, parameters);
         List<ProductParameterAvailableValuesDto> availableParameters = response.getAvailableParameters();
         assertThat(response.getProducts(), is(not(nullValue())));
+        for (ProductDto productDto : response.getProducts()) {
+            assertThat(
+                    "Factory method should make a 'shallow' copy of the product entity without parameters",
+                    productDto.getParameters().size(),
+                    equalTo(0)
+            );
+        }
         assertThat(response.getChildGroups(), is(nullValue()));
         assertThat(response.getTotalAmount(), is(equalTo(23L)));
         assertThat(availableParameters.size(), equalTo(2));
         for (ProductParameterAvailableValuesDto parameterValues : availableParameters) {
-            if (parameterValues.getName().equals("name1")) {
-                assertThat(parameterValues.getValues(), hasItems("value11", "value12"));
-            } else if (parameterValues.getName().equals("name2")) {
-                assertThat(parameterValues.getValues(), hasItems("value21", "value22", "value23"));
-            } else {
-                throw new RuntimeException("Invalid parameter name=" + parameterValues.getName());
+            switch (parameterValues.getName()) {
+                case "name1":
+                    assertThat(parameterValues.getValues(), hasItems("value11", "value12"));
+                    break;
+                case "name2":
+                    assertThat(parameterValues.getValues(), hasItems("value21", "value22", "value23"));
+                    break;
+                default:
+                    throw new RuntimeException("Invalid parameter name=" + parameterValues.getName());
             }
         }
     }

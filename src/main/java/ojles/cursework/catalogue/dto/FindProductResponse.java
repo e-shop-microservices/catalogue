@@ -21,7 +21,7 @@ public final class FindProductResponse {
     public static FindProductResponse productsByIds(List<Product> products) {
         FindProductResponse response = new FindProductResponse();
         response.products = products.stream()
-                .map(ProductDto::from)
+                .map(ProductDto::withoutParameters)
                 .collect(Collectors.toList());
         return response;
     }
@@ -38,7 +38,7 @@ public final class FindProductResponse {
                                                List<ParameterAvailableValues> allParameters) {
         FindProductResponse response = new FindProductResponse();
         response.products = products.stream()
-                .map(ProductDto::from)
+                .map(ProductDto::withoutParameters)
                 .collect(Collectors.toList());
         response.totalAmount = totalAmount;
         response.availableParameters = allParameters.stream()
