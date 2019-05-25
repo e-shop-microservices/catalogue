@@ -93,7 +93,9 @@ public class ProductCustomSearchImpl implements ProductCustomSearch {
 
         List<String> predicates = buildPredicates(request);
         if (predicates.isEmpty()) {
-            return queryBuilder.toString();
+            return queryBuilder
+                    .append(") as p")
+                    .toString();
         }
 
         // build where clause

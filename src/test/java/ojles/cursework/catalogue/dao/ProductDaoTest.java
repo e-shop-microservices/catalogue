@@ -38,6 +38,18 @@ public class ProductDaoTest {
     }
 
     @Test
+    public void testEmptyFindProductsSearch() {
+        List<Product> products = productDao.findProducts(request);
+        assertThat(products.size(), equalTo(7));
+    }
+
+    @Test
+    public void testEmptyFindProductsCount() {
+        long count = productDao.countProducts(request);
+        assertThat(count, equalTo(7L));
+    }
+
+    @Test
     public void testFindProductsSearchQueryFilter() {
         request.setSearchQuery("Lasting");
 
