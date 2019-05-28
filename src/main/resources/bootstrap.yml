@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: catalogue
+  profiles:
+    active:
+      ${CATALOGUE_PROFILE}
+  cloud:
+    config:
+      uri: ${CONFIGSERVER_URI}
